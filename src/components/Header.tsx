@@ -1,74 +1,37 @@
-"use client";
-
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { site } from "@/data/site";
-
-const links = [
-  { id: "about", label: "About" },
-  { id: "tools", label: "Tools" },
-  { id: "services", label: "Services" },
-  { id: "work", label: "Work" },
-];
-
 export default function Header() {
-  const [progress, setProgress] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState("");
-
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      setProgress(max > 0 ? (h.scrollTop / max) * 100 : 0);
-      setScrolled(h.scrollTop > 10);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    links.forEach((l) => {
-      const el = document.getElementById(l.id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, []);
-
   return (
-    <header id="hdr" className={scrolled ? "scrolled" : ""}>
-      <div className="wrap">
-        <nav aria-label="Main">
-          <a href="#top" className="brand">
-            <Image src="/logo-pf.png" alt="PhewFlow logo" width={60} height={32} priority />
-            {site.name}
-          </a>
-          <ul>
-            {links.map((l) => (
-              <li key={l.id} className="hm">
-                <a className={`l${active === l.id ? " act" : ""}`} href={`#${l.id}`}>
-                  {l.label}
-                </a>
-              </li>
-            ))}
-            <li>
-              <a className="btn primary sm" href="#book">
-                Book a call
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div id="bar" style={{ width: `${progress}%` }} />
-    </header>
+    <>
+      <header id="hdr">
+        <div className="wrap">
+          <nav aria-label="Main">
+            <a href="#top" className="brand">
+              <img className="lt" src="/img/pf-light.png" alt="PhewFlow logo" /><img className="dk" src="/img/pf-dark.png" alt="PhewFlow logo" />
+              <span className="bt"><span className="pf">PhewFlow<span className="bas"> Business Automation Solutions</span></span></span>
+            </a>
+            <div className="nav-r">
+              <ul>
+                <li className="hm"><a href="#about">About</a></li>
+                <li className="hm"><a href="#tools">Tools</a></li>
+                <li className="hm"><a href="#numbers">Impact</a></li>
+                <li className="hm"><a href="#services">Services</a></li>
+                <li className="hm"><a href="#work">Work</a></li>
+                <li><a className="btn primary sm" href="#book">Book a call</a></li>
+              </ul>
+              <div className="rope" id="rope">
+                <div className="rope-in" id="ropeIn">
+                  <div className="cord"></div>
+                  <button className="knob" id="theme" type="button" aria-label="Pull the cord to switch to night mode" title="Pull the cord">
+                    <svg className="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                    <svg className="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                  </button>
+                </div>
+                <span className="rope-tip">Pull for day / night</span>
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div id="bar"></div>
+      </header>
+    </>
   );
 }

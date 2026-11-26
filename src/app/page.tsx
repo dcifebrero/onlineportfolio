@@ -3,14 +3,15 @@ import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
 import About from "@/components/About";
 import Tools from "@/components/Tools";
+import Impact from "@/components/Impact";
 import HowIWork from "@/components/HowIWork";
 import Services from "@/components/Services";
 import Work from "@/components/Work";
 import Booking from "@/components/Booking";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import RevealObserver from "@/components/RevealObserver";
-import Interactions from "@/components/Interactions";
+import Overlays from "@/components/Overlays";
+import Effects from "@/components/Effects";
 import { site } from "@/data/site";
 import { siteUrl } from "@/lib/siteUrl";
 
@@ -35,6 +36,7 @@ export default function Home() {
         <TrustStrip />
         <About />
         <Tools />
+        <Impact />
         <HowIWork />
         <Services />
         <Work />
@@ -42,12 +44,9 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-      <RevealObserver />
-      <Interactions />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <Overlays />
+      <Effects />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>
   );
 }

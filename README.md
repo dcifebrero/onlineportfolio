@@ -7,41 +7,36 @@ Brand colors: `#064f43` · `#f2c94c` · `#fff9ef` · `#292e2b`.
 
 ```
 phewflow-next/
-├── public/                     Static files served from "/"
-│   ├── deo.jpg                 Your photo
-│   ├── logo-pf.png             PF mark (header)
-│   ├── logo-wordmark.png       Dark wordmark
-│   └── logo-wordmark-light.png Light wordmark (footer)
+├── public/img/                 Images: deo.jpg (photo), pf-light/pf-dark (header mark),
+│                               logo-full / logo-full-dark (footer logo),
+│                               shot-email.jpg / shot-clip.jpg (work-sample screenshots)
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx          Fonts, SEO metadata, <html>
+│   │   ├── layout.tsx          Fonts, SEO metadata, day/night pre-paint script
 │   │   ├── page.tsx            Home page: assembles every section
-│   │   ├── globals.css         All styles and animations
-│   │   ├── icon.png            Favicon (auto-detected by Next.js)
-│   │   ├── apple-icon.png      iOS home-screen icon
-│   │   ├── opengraph-image.jpg Link-preview image (WhatsApp, LinkedIn, Facebook…)
-│   │   ├── twitter-image.jpg   Link-preview image for X/Twitter
-│   │   ├── robots.ts           /robots.txt
-│   │   ├── sitemap.ts          /sitemap.xml
-│   │   └── api/book/route.ts   Booking endpoint: emails requests to you
-│   ├── components/             One file per section / interactive piece
-│   │   ├── Header.tsx          Sticky nav, scroll progress, active link
+│   │   ├── globals.css         All styles. Colors are at the top (:root = day, [data-theme="dark"] = night)
+│   │   ├── icon.png, apple-icon.png, opengraph-image.jpg, twitter-image.jpg
+│   │   ├── robots.ts, sitemap.ts
+│   │   └── api/book/route.ts   Booking endpoint: emails requests to you (Resend)
+│   ├── components/             One file per section
+│   │   ├── Header.tsx          Logo + "PhewFlow Business Automation Solutions", nav, pull-cord day/night switch
 │   │   ├── Hero.tsx            Photo, headline, floating tool chips
-│   │   ├── RotatingWord.tsx    "Let's take ___ off your plate"
 │   │   ├── TrustStrip.tsx      Timezone / reply time / human-checked
 │   │   ├── About.tsx           Bio + three pillars
-│   │   ├── Tools.tsx           Filterable tools grid
-│   │   ├── HowIWork.tsx        Animated 4-step flow
-│   │   ├── Services.tsx        Accordion
-│   │   ├── Work.tsx            Work samples section
-│   │   ├── WorkCard.tsx        Card with hover "Demo coming soon"
-│   │   ├── Booking.tsx         Calendar + booking form
+│   │   ├── Tools.tsx           "Tools I use" slow-moving banner (tiles come from data/tools.ts)
+│   │   ├── Impact.tsx          Research numbers + savings calculator
+│   │   ├── HowIWork.tsx        4-step flow + email-workflow simulator
+│   │   ├── Services.tsx        Accordion (text in data/content.ts)
+│   │   ├── Work.tsx            Work samples with screenshots, "Demo coming soon" hover, zoom
+│   │   ├── Booking.tsx         Calendar + booking form (markup)
 │   │   ├── Contact.tsx         Gmail + LinkedIn buttons
-│   │   ├── CopyEmail.tsx       "Copy email" with toast
-│   │   ├── Footer.tsx
-│   │   ├── RevealObserver.tsx  Fade-in on scroll
-│   │   └── Interactions.tsx    Cursor glow, tilt, magnetic buttons
-│   ├── data/site.ts            ★ ALL your content (text, tools, work, hours)
+│   │   ├── Footer.tsx          Large PhewFlow logo
+│   │   ├── Overlays.tsx        Zoom window, back-to-top button, toast
+│   │   └── Effects.tsx         All the interactive behavior (client component)
+│   ├── data/
+│   │   ├── site.ts             Email, LinkedIn, booking hours/days
+│   │   ├── content.ts          Banner order, flow steps, services, demo emails, rotating words
+│   │   └── tools.ts            Tool names, colors, icons
 │   └── lib/siteUrl.ts          Resolves the site's public URL
 ├── .env.example                Environment variables you need
 ├── next.config.mjs
@@ -68,12 +63,13 @@ npm run build && npm start
 
 ## Change your content
 
-Open **`src/data/site.ts`**. Everything is there: email, LinkedIn, tools, services,
-work samples, booking hours. Save, and the page updates.
-
-* **Add a demo** to a work sample later: edit `src/components/WorkCard.tsx`
-  (replace the "Demo coming soon" overlay with a video or link).
-* **Add certifications**: create `src/components/Certifications.tsx` and add it to `src/app/page.tsx`.
+* **Email, LinkedIn, call hours**: `src/data/site.ts`
+* **Services, flow steps, rotating words, demo emails, tools banner order**: `src/data/content.ts`
+* **Add or remove a tool**: `src/data/tools.ts`, then add its name to `ROW_A` or `ROW_B` in `content.ts`
+* **Headings and paragraphs** (About, Impact numbers, Work samples, Contact): the matching file in `src/components/`
+* **Add a demo** to a work sample later: in `src/components/Work.tsx`, replace the "Demo coming soon" overlay with a video or link
+* **Replace a screenshot**: put the new image in `public/img/` under the same name
+* **Colors**: top of `src/app/globals.css`
 
 ## Make the booking form email you
 
