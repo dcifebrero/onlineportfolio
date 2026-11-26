@@ -22,7 +22,7 @@ export default function Booking() {
                 <div><label htmlFor="name">Name</label><input id="name" name="name" type="text" required autoComplete="name" /></div>
                 <div><label htmlFor="email">Email</label><input id="email" name="email" type="email" required autoComplete="email" /></div>
                 <div><label htmlFor="note">What would you like to discuss? (optional)</label><textarea id="note" name="note"></textarea></div>
-                <input className="hp" type="checkbox" name="botcheck" tabIndex="-1" autoComplete="off" aria-hidden="true" />
+                <input className="hp" type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                 <button className="btn primary" id="send" type="submit">Request this time</button>
                 <div className="msg" id="msg" role="status"></div>
               </form>
