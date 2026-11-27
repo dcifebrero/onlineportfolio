@@ -10,7 +10,7 @@ import { ROW_A, ROW_B, STEPS, STEP_ICONS, SERVICES, EMAILS, PIPE, WORDS } from "
 
 const CONFIG = {
   toEmail: site.email,
-  hours: booking.hours,
+  slots: booking.slots,
   workdays: booking.workdays,
   leadHours: booking.leadHours,
   monthsAhead: booking.monthsAhead,
@@ -163,11 +163,13 @@ export default function Effects() {
     const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
     const OFF=booking.utcOffset, now=new Date(), phNow=new Date(now.getTime()+OFF*3600e3);
     let vY=phNow.getUTCFullYear(), vM=phNow.getUTCMonth(); const sY=vY,sM=vM; let sel=null,selH=null;
-    const ts=(y,m,d,h)=>Date.UTC(y,m,d,h-OFF,0);
-    const free=(y,m,d)=>CONFIG.hours.filter(h=>ts(y,m,d,h)>=now.getTime()+CONFIG.leadHours*3600e3);
-    const fmtH=h=>(((h+11)%12)+1)+':00 '+(h>=12?'PM':'AM');
+    const ts=(y,m,d,min)=>Date.UTC(y,m,d,0,min-OFF*60);
+    const free=(y,m,d)=>CONFIG.slots.filter(min=>ts(y,m,d,min)>=now.getTime()+CONFIG.leadHours*3600e3);
+    const phtTime=min=>{const m=min%1440,h=Math.floor(m/60),mm=m%60;return (((h+11)%12)+1)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM')};
+    const phtFull=()=>new Date(ts(sel.y,sel.m,sel.d,selH)).toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'Asia/Manila'});
+    const localTime=min=>new Date(ts(sel.y,sel.m,sel.d,min)).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
     const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'your timezone';
-    $('#tz').textContent='Times shown in Philippine Time (GMT+8). Your timezone: '+tz+'.';
+    $('#tz').textContent='Evening calls, 8:00 PM to 2:30 AM Philippine Time (GMT+8). Each time button shows your local time ('+tz+') with the Philippine time underneath.';
     function renderCal(){
       $('#cmonth').textContent=MONTHS[vM]+' '+vY;
       const first=new Date(Date.UTC(vY,vM,1)).getUTCDay(),dim=new Date(Date.UTC(vY,vM+1,0)).getUTCDate(),box=$('#days');box.innerHTML='';
@@ -186,12 +188,14 @@ export default function Effects() {
       const box=$('#slots');box.innerHTML='';
       if(!sel){$('#st').textContent='Select a date';box.innerHTML='<p class="hintp">Available times appear here.</p>';return}
       $('#st').textContent=dayLabel();
-      free(sel.y,sel.m,sel.d).forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='slot'+(selH===h?' sel':'');b.style.animationDelay=(i*.04)+'s';b.textContent=fmtH(h);b.onclick=()=>{selH=h;renderSlots();showForm()};box.appendChild(b)});
+      free(sel.y,sel.m,sel.d).forEach((min,i)=>{const b=document.createElement('button');b.type='button';b.className='slot'+(selH===min?' sel':'');b.style.animationDelay=Math.min(i*.02,.5)+'s';
+        const next=min>=1440?' (+1 day)':'';b.title=new Date(ts(sel.y,sel.m,sel.d,min)).toLocaleString([],{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+        const lt=localTime(min);b.innerHTML='<b>'+lt+'</b><small>'+(lt===phtTime(min)?'Philippine Time':phtTime(min)+' PHT')+next+'</small>';b.onclick=()=>{selH=min;renderSlots();showForm()};box.appendChild(b)});
     }
-    function showForm(){$('#form').hidden=false;$('#chosen').textContent=dayLabel()+', '+fmtH(selH)+' PHT · your time: '+localLabel();$('#msg').textContent='';$('#msg').className='msg'}
+    function showForm(){$('#form').hidden=false;$('#chosen').textContent=phtFull()+' PHT · your time: '+localLabel();$('#msg').textContent='';$('#msg').className='msg'}
     $('#form').addEventListener('submit',async e=>{
       e.preventDefault();const f=e.target,msg=$('#msg'),btn=$('#send');if(f.botcheck.checked)return;
-      const when=dayLabel()+', '+fmtH(selH)+' (Philippine Time)';
+      const when=phtFull()+' (Philippine Time)';
       const info={name:f.name.value.trim(),email:f.email.value.trim(),note:f.note.value.trim(),local:localLabel()};
       const body=`Discovery call request\n\nName: ${info.name}\nEmail: ${info.email}\nRequested time: ${when}\nVisitor's local time: ${info.local} (${tz})\n\nMessage:\n${info.note||'(none)'}`;
       btn.disabled=true;btn.textContent='Sending…';msg.textContent='';
